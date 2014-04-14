@@ -233,7 +233,7 @@ function init_payul_gateway() {
 				$po_args_array[] = '<input type="hidden" name="'.esc_attr($key).'" value="'.esc_attr($value).'" />';
 			}
 
-			return '<form action="'. esc_url( $gateway_url ) .'" method="post" id="po_payment_form">
+			return '<form action="'. esc_url( $gateway_url ) .'" method="post" id="payl_payment_form">
 					' . implode('', $po_args_array) . '
 					<button type="submit" class="btn btn-large btn-success" id="submit_payment_form" name="submit" />
 						'.__('Pagar via PayU Latam', 'payul_gateway').'
