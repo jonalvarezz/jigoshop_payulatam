@@ -144,6 +144,14 @@ function init_payul_gateway() {
 				'std' 		=> 16,
 				'type' 		=> 'natural'
 			);
+
+			$defaults[] = array(
+				'name'		=> __('Responde Page','po_gateway'),
+				'desc' 		=> __('Your customer will be returned to this page once the payment is done.', 'payul_gateway'),
+				'id' 		=> 'payul_gateway_response_page_id',
+				'type' 		=> 'single_select_page',
+				'std' 		=> ''
+			);
 		
 			$defaults[] = array(
 				'name'		=> __('Display Language','payul_gateway'),
@@ -192,9 +200,6 @@ function init_payul_gateway() {
 		        $tax = $order->order_total - $taxReturnBase;	        	
 	        }
 
-	        //Sending po respone to index page
-	        $url_respuesta = get_permalink($this->responsepage);
-
 			$po_args = array(
 
 				// PayU Latam API
@@ -208,6 +213,7 @@ function init_payul_gateway() {
 				'taxReturnBase'			=> number_format($taxReturnBase, 2, '.', ''),
 
 				// Complementary info for PayU Latam
+				'responseUrl' 			=> get_permalink($this->responsepage),
 				'lng' 					=> $this->lang,
 				'test'					=> ($this->testmode == 'yes') ? 1 : 0,
 				'currency'				=> Jigoshop_Base::get_options()->get_option('jigoshop_currency'),
