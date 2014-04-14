@@ -51,6 +51,7 @@ function init_payul_gateway() {
 	  		$this->key			= Jigoshop_Base::get_options()->get_option('payul_gateway_key');
 	  		$this->account_id	= Jigoshop_Base::get_options()->get_option('payul_gateway_account_id');
 	  		$this->tax_amount	= Jigoshop_Base::get_options()->get_option('payul_gateway_tax_amount');
+	  		$this->lang			= Jigoshop_Base::get_options()->get_option('payul_gateway_lang');
 
 	  		$this->responsepage	= Jigoshop_Base::get_options()->get_option('payul_gateway_response_page_id');  		
 
@@ -96,7 +97,6 @@ function init_payul_gateway() {
 
 			$defaults[] = array(
 				'name'		=> __('Method Title','payul_gateway'),
-				'desc' 		=> '',
 				'tip' 		=> __('This controls the title which the user sees during checkout.','payul_gateway'),
 				'id' 		=> 'payul_gateway_title',
 				'std' 		=> __('PayU Latam','payul_gateway'),
@@ -105,7 +105,6 @@ function init_payul_gateway() {
 
 			$defaults[] = array(
 				'name'		=> __('Description','payul_gateway'),
-				'desc' 		=> '',
 				'tip' 		=> __('This controls the description which the user sees during checkout.','payul_gateway'),
 				'id' 		=> 'payul_gateway_description',
 				'std' 		=> __('Pay with credit and debit card, and many other national options', 'payul_gateway'),
@@ -114,7 +113,6 @@ function init_payul_gateway() {
 
 			$defaults[] = array(
 				'name'		=> __('Merchant Id','payul_gateway'),
-				'desc' 		=> '',
 				'tip' 		=> __('You will find this information under PayU Latam > Configuration > Technical Information.','payul_gateway'),
 				'id' 		=> 'payul_gateway_userid',
 				'std' 		=> '500238',
@@ -124,7 +122,6 @@ function init_payul_gateway() {
 			
 			$defaults[] = array(
 				'name'		=> __('API Key','payul_gateway'),
-				'desc' 		=> '',
 				'tip' 		=> __('You will find this information under PayU Latam > Configuration > Technical Information.','payul_gateway'),
 				'id' 		=> 'payul_gateway_key',
 				'std' 		=> '6u39nqhq8ftd0hlvnjfs66eh8c',
@@ -134,7 +131,6 @@ function init_payul_gateway() {
 			
 			$defaults[] = array(
 				'name'		=> __('Account Id','payul_gateway'),
-				'desc' 		=> '',
 				'tip' 		=> __('It is your number of your Accound','payul_gateway'),
 				'id' 		=> 'payul_gateway_account_id',
 				'std' 		=> '500538',
@@ -143,11 +139,23 @@ function init_payul_gateway() {
 
 			$defaults[] = array(
 				'name'		=> __('Tax percent','payul_gateway'),
-				'desc' 		=> '',
 				'tip' 		=> __('Percentage tax amount to be included. Zero to none tax.','payul_gateway'),
 				'id' 		=> 'payul_gateway_tax_amount',
 				'std' 		=> 16,
 				'type' 		=> 'natural'
+			);
+		
+			$defaults[] = array(
+				'name'		=> __('Display Language','payul_gateway'),
+				'tip'		=> __('PayU Latam\s web checkout display langueage', 'payul_gateway'),
+				'std' 		=> 'ES',
+				'id' 		=> 'payul_gateway_lang',
+				'type' 		=> 'select',
+				'choices'	=> array(
+					'EN'			=> __('English', 'payul_gateway'),
+					'ES'			=> __('Spanish', 'payul_gateway'),
+					'PT'			=> __('Portuguese', 'payul_gateway')
+				)
 			);
 
 			$defaults[] = array(
@@ -196,12 +204,11 @@ function init_payul_gateway() {
 				'referenceCode'			=> "$order->id-$refventa_aux",
 				'description'			=> $this->get_articles_detail($order),
 				'amount'				=> $order->order_total,			
-
-				//Taxes
 				'tax'					=> number_format($tax, 2, '.', ''),
 				'taxReturnBase'			=> number_format($taxReturnBase, 2, '.', ''),
 
-				// Optional info for PayU Latam
+				// Complementary info for PayU Latam
+				'lng' 					=> $this->lang,
 				'test'					=> ($this->testmode == 'yes') ? 1 : 0,
 				'currency'				=> Jigoshop_Base::get_options()->get_option('jigoshop_currency'),
 				'buyerFullName'			=> "$order->billing_first_name $order->billing_last_name",
