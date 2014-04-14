@@ -205,7 +205,7 @@ function init_payul_gateway() {
 				// PayU Latam API
 				'merchantId'			=> $this->userid,
 				'signature'				=> $this->key,
-				'accountId'				=> $this->account_id,
+				//'accountId'				=> $this->account_id, // Si se envia PayU muestra error de no corresponder la cuenta con comcercio
 				'referenceCode'			=> "$order->id-$refventa_aux",
 				'description'			=> $this->get_articles_detail($order),
 				'amount'				=> $order->order_total,			
