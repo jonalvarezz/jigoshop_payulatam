@@ -3,7 +3,7 @@
 Plugin Name: PayU Latam Jigoshop Gateway
 Plugin URI: https://github.com/jonalvarezz/payu-latam-jigoshop-gateway
 Description: PayU Latam Gateway for Jigoshop in Wordpress
-Version: 0.1
+Version: 1.0
 Requires at least: 3.3
 Tested up to: 3.8
 Required Jigoshop Version: 1.3
@@ -49,6 +49,7 @@ function init_payul_gateway() {
 			$this->description 	= Jigoshop_Base::get_options()->get_option('payul_gateway_description');	  		
 	  		$this->userid		= Jigoshop_Base::get_options()->get_option('payul_gateway_userid');
 	  		$this->key			= Jigoshop_Base::get_options()->get_option('payul_gateway_key');
+	  		$this->account_id	= Jigoshop_Base::get_options()->get_option('payul_gateway_account_id');
 	  		$this->tax_amount	= Jigoshop_Base::get_options()->get_option('payul_gateway_tax_amount');
 
 	  		$this->responsepage	= Jigoshop_Base::get_options()->get_option('payul_gateway_response_page_id');  		
@@ -94,19 +95,6 @@ function init_payul_gateway() {
 			);
 
 			$defaults[] = array(
-				'name'		=> __('Test mode','payul_gateway'),
-				'desc' 		=> '',
-				'tip' 		=> __('All transtactions will be in test mode','payul_gateway'),
-				'id' 		=> 'payul_gateway_testmode',
-				'std' 		=> 'no',
-				'type' 		=> 'checkbox',
-				'choices'	=> array(
-					'no'			=> __('No', 'payul_gateway'),
-					'yes'			=> __('Yes', 'payul_gateway')
-				)
-			);
-
-			$defaults[] = array(
 				'name'		=> __('Method Title','payul_gateway'),
 				'desc' 		=> '',
 				'tip' 		=> __('This controls the title which the user sees during checkout.','payul_gateway'),
@@ -122,15 +110,6 @@ function init_payul_gateway() {
 				'id' 		=> 'payul_gateway_description',
 				'std' 		=> __('Pay with credit and debit card, and many other national options', 'payul_gateway'),
 				'type' 		=> 'longtext'
-			);
-
-			$defaults[] = array(
-				'name'		=> __('Tax amount','payul_gateway'),
-				'desc' 		=> '',
-				'tip' 		=> __('Percentage tax amount to be included. Zero to none tax.','payul_gateway'),
-				'id' 		=> 'payul_gateway_tax_amount',
-				'std' 		=> 16,
-				'type' 		=> 'natural'
 			);
 
 			$defaults[] = array(
@@ -150,6 +129,37 @@ function init_payul_gateway() {
 				'id' 		=> 'payul_gateway_key',
 				'std' 		=> '6u39nqhq8ftd0hlvnjfs66eh8c',
 				'type' 		=> 'text'
+			);
+		
+			
+			$defaults[] = array(
+				'name'		=> __('Account Id','payul_gateway'),
+				'desc' 		=> '',
+				'tip' 		=> __('It is your number of your Accound','payul_gateway'),
+				'id' 		=> 'payul_gateway_account_id',
+				'std' 		=> '500538',
+				'type' 		=> 'text'
+			);
+
+			$defaults[] = array(
+				'name'		=> __('Tax percent','payul_gateway'),
+				'desc' 		=> '',
+				'tip' 		=> __('Percentage tax amount to be included. Zero to none tax.','payul_gateway'),
+				'id' 		=> 'payul_gateway_tax_amount',
+				'std' 		=> 16,
+				'type' 		=> 'natural'
+			);
+
+			$defaults[] = array(
+				'name'		=> __('Test mode','payul_gateway'),
+				'desc' 		=> __('Turn on to enable PayU Latam in test mode','payul_gateway'),
+				'id' 		=> 'payul_gateway_testmode',
+				'std' 		=> 'no',
+				'type' 		=> 'checkbox',
+				'choices'	=> array(
+					'no'			=> __('No', 'payul_gateway'),
+					'yes'			=> __('Yes', 'payul_gateway')
+				)
 			);
 
 			return $defaults;
@@ -182,6 +192,7 @@ function init_payul_gateway() {
 				// PayU Latam API
 				'merchantId'			=> $this->userid,
 				'signature'				=> $this->key,
+				'accountId'				=> $this->account_id,
 				'referenceCode'			=> "$order->id-$refventa_aux",
 				'description'			=> $this->get_articles_detail($order),
 				'amount'				=> $order->order_total,			
