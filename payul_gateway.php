@@ -220,6 +220,8 @@ function init_payul_gateway() {
 				'buyerFullName'			=> "$order->billing_first_name $order->billing_last_name",
 				'buyerEmail'			=> $order->billing_email,
 				'telephone'				=> $order->billing_phone,
+				'billingAddress' 		=> $order->billing_address_1,
+				'billingCity' 			=> $order->billing_city,
 				'extra1'				=> "$order->billing_address_1, $order->billing_address_2, $order->billing_city"
 				
 			);
