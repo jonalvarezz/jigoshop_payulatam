@@ -342,7 +342,7 @@ function init_payul_gateway() {
 					//if variation, insert variation details into product title
 					if ($_product instanceof jigoshop_product_variation) {
 
-						$title .= ' (' . jigoshop_get_formatted_variation( $item['variation'], true) . ')';
+						$title .= ' ('. jigoshop_get_formatted_variation($_product, $item['variation'], true) .')';
 
 					}
 					$amount = number_format( apply_filters( 'jigoshop_paypal_adjust_item_price' ,$_product->get_price(), $item, 10, 2 ), 2);
