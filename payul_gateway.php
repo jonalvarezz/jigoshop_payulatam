@@ -15,7 +15,7 @@ Author URI: http://jonalvarezz.com
 
 add_action( 'plugins_loaded', 'init_payul_gateway' );
 function init_payul_gateway() {
-	
+
 	// Sometimes Jigoshop is de-activated - do nothing without it
 	if ( ! class_exists( 'jigoshop' )) return;
 
@@ -25,17 +25,17 @@ function init_payul_gateway() {
 		return $methods;
 	}
 	add_filter( 'jigoshop_payment_gateways', 'add_payul_gateway', 3 );
-	
+
 	/**
 	 * Main class definition
 	 */
 	class PayULatam_Gateway extends jigoshop_payment_gateway {
-	
+
 		public function __construct() {
 
 			// load our text domains first for translations (constructor is called on the 'init' action hook)
 			load_plugin_textdomain( 'payul_gateway', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-			
+
 			parent::__construct();
 
 			$this->id			= 'payulatam';
@@ -45,44 +45,44 @@ function init_payul_gateway() {
 
 			$this->enabled		= Jigoshop_Base::get_options()->get_option('payul_gateway_enabled');
 			$this->testmode		= Jigoshop_Base::get_options()->get_option('payul_gateway_testmode');
-			$this->title 		= Jigoshop_Base::get_options()->get_option('payul_gateway_title');			
-			$this->description 	= Jigoshop_Base::get_options()->get_option('payul_gateway_description');	  		
+			$this->title 		= Jigoshop_Base::get_options()->get_option('payul_gateway_title');
+			$this->description 	= Jigoshop_Base::get_options()->get_option('payul_gateway_description');
 	  		$this->userid		= Jigoshop_Base::get_options()->get_option('payul_gateway_userid');
 	  		$this->key			= Jigoshop_Base::get_options()->get_option('payul_gateway_key');
 	  		$this->account_id	= Jigoshop_Base::get_options()->get_option('payul_gateway_account_id');
 	  		$this->tax_amount	= Jigoshop_Base::get_options()->get_option('payul_gateway_tax_amount');
 	  		$this->lang			= Jigoshop_Base::get_options()->get_option('payul_gateway_lang');
 
-	  		$this->responsepage	= Jigoshop_Base::get_options()->get_option('payul_gateway_response_page_id');  		
+	  		$this->responsepage	= Jigoshop_Base::get_options()->get_option('payul_gateway_response_page_id');
 
 			// Actions
 			// add_action('init', array(&$this, 'check_ipn_response') );
 			// add_action('valid-po-ipn-request', array(&$this, 'successful_request') );
 			add_action('receipt_payulatam', array(&$this, 'receipt_page'));
-	  		
+
 		}
-		
+
 
 		/**
 		 * Default Option settings for WordPress Settings API using the Jigoshop_Options class
 		 * Jigoshop will install, display, validate and save changes for our provided default options
 		 *
 		 * These will be installed on the Settings 'Payment Gateways' tab by the parent class
-		 * 
+		 *
 		 * See 'jigoshop/classes/jigoshop_options.class.php' for details on various option types
 		 *
-		 */	
+		 */
 		protected function get_default_options() {
-	
+
 			$defaults = array();
-		
+
 			// Define the Section name for the Jigoshop_Options
 			$defaults[] = array(
 				'name' => __('PayU Latam', 'payul_gateway'),
 				'type' => 'title',
 				'desc' => __('This plugin sends the user to PayU Latam\'s web checkout, where the user could choice his payment method', 'payul_gateway')
 			);
-		
+
 			// List each option in order of appearance with details
 			$defaults[] = array(
 				'name'		=> __('Enable PayU Latam Gateway','payul_gateway'),
@@ -118,8 +118,8 @@ function init_payul_gateway() {
 				'std' 		=> '500238',
 				'type' 		=> 'text'
 			);
-		
-			
+
+
 			$defaults[] = array(
 				'name'		=> __('API Key','payul_gateway'),
 				'tip' 		=> __('You will find this information under PayU Latam > Configuration > Technical Information.','payul_gateway'),
@@ -127,8 +127,8 @@ function init_payul_gateway() {
 				'std' 		=> '6u39nqhq8ftd0hlvnjfs66eh8c',
 				'type' 		=> 'text'
 			);
-		
-			
+
+
 			$defaults[] = array(
 				'name'		=> __('Account Id','payul_gateway'),
 				'tip' 		=> __('It is your number of your Accound','payul_gateway'),
@@ -152,7 +152,7 @@ function init_payul_gateway() {
 				'type' 		=> 'single_select_page',
 				'std' 		=> ''
 			);
-		
+
 			$defaults[] = array(
 				'name'		=> __('Display Language','payul_gateway'),
 				'tip'		=> __('PayU Latam\s web checkout display langueage', 'payul_gateway'),
@@ -179,14 +179,14 @@ function init_payul_gateway() {
 			);
 
 			return $defaults;
-			
+
 		}
 
 
 		public function generate_po_form( $order_id ) {
 
 			$order = new jigoshop_order( $order_id );
-	        
+
 	        $gateway_url = ($this->testmode == 'yes') ? $this->testurl : $this->liveurl;
 
 	        $refventa_aux = time();
@@ -197,7 +197,7 @@ function init_payul_gateway() {
 
 	        if( $this->tax_amount > 0 ) {
 		        $taxReturnBase = $this->calc_taxReturnBase( $order->order_total, $this->tax_amount );
-		        $tax = $order->order_total - $taxReturnBase;	        	
+		        $tax = $order->order_total - $taxReturnBase;
 	        }
 
 			$po_args = array(
@@ -208,7 +208,7 @@ function init_payul_gateway() {
 				//'accountId'				=> $this->account_id, // Si se envia PayU muestra error de no corresponder la cuenta con comcercio
 				'referenceCode'			=> "$order->id-$refventa_aux",
 				'description'			=> $this->get_articles_detail($order),
-				'amount'				=> $order->order_total,			
+				'amount'				=> $order->order_total,
 				'tax'					=> number_format($tax, 2, '.', ''),
 				'taxReturnBase'			=> number_format($taxReturnBase, 2, '.', ''),
 
@@ -223,7 +223,7 @@ function init_payul_gateway() {
 				'billingAddress' 		=> $order->billing_address_1,
 				'billingCity' 			=> $order->billing_city,
 				'extra1'				=> "$order->billing_address_1, $order->billing_address_2, $order->billing_city"
-				
+
 			);
 
 			$po_args['signature'] = $this->gen_digital_sign($po_args);
@@ -239,7 +239,7 @@ function init_payul_gateway() {
 						'.__('Pagar via PayU Latam', 'payul_gateway').'
 					</button>
 					<a class="btn btn-large btn-warning" href="'.esc_url($order->get_cancel_order_url()).'">'.__('Cancel order &amp; restore cart', 'payul_gateway').'</a>
-					
+
 						<script type="text/javascript">
 							jQuery(function(){
 								jQuery("body").block(
@@ -278,7 +278,7 @@ function init_payul_gateway() {
 			);
 
 		}
-		
+
 		/**
 		 * receipt_page
 		 **/
@@ -293,7 +293,7 @@ function init_payul_gateway() {
 		/**
 		 * Successful Payment!
 		 **/
-		function successful_request( $posted ) {			
+		function successful_request( $posted ) {
 			// TODO
 
 		}
@@ -327,9 +327,9 @@ function init_payul_gateway() {
 			$t = $total / (1 + $tax_amount/100);
 			return $t;
 		}
-		 
 
-		function get_articles_detail($order) {			
+
+		function get_articles_detail($order) {
 			$out  = '';
 			if (sizeof($order->items)>0) : foreach ($order->items as $item) :
 
@@ -354,9 +354,14 @@ function init_payul_gateway() {
 			endforeach; endif;
 
 			$out .= ' - ' . get_bloginfo();
+
+			if (strlen($out) > 250) {
+				$out = sizeof($order->items) . ' productos - ' . get_bloginfo();
+			}
+
 			return $out;
 		}
 
 	}   /* End of Class definition for the Gateway */
-	
+
 }   /* End of init gateway function */
