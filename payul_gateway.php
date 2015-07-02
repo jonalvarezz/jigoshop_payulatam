@@ -345,7 +345,7 @@ function init_payul_gateway() {
 						$title .= ' ('. jigoshop_get_formatted_variation($_product, $item['variation'], true) .')';
 
 					}
-					$amount = number_format( apply_filters( 'jigoshop_paypal_adjust_item_price' ,$_product->get_price(), $item, 10, 2 ), 2);
+					$amount = number_format( apply_filters( 'jigoshop_payu_adjust_item_price' ,$_product->get_price(), $item, 10, 2 ), 2);
 
 					$out .= $item['qty'];
 					$out .= " $title ($amount c/u); ";
