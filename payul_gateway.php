@@ -348,7 +348,7 @@ function init_payul_gateway() {
 					$amount = number_format( apply_filters( 'jigoshop_paypal_adjust_item_price' ,$_product->get_price(), $item, 10, 2 ), 2);
 
 					$out .= $item['qty'];
-					$out .= " $title ($amount c/u)\n";
+					$out .= " $title ($amount c/u); ";
 
 				endif;
 			endforeach; endif;
